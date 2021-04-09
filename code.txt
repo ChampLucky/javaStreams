@@ -1,0 +1,93 @@
+package com.ipl;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Duplicate {
+
+	public static void main(String[] args) {
+
+		String arr[] = { "amazon", "gcp", "azure", "amazon", "alibaba", "saucelabs", "azure", "gcp" };
+		HashMap<String, Integer> map = new HashMap<>();
+
+		System.out.println("------------------using hashmap find duplicate------------------");
+		List<String> array = Arrays.asList(arr);
+		usingHashMapFindDuplicate(map, array);
+
+//		--- using hasset
+
+		System.out.println("------------------using hashset find duplicate------------------");
+		usingHashSetFindDuplicate(array);
+
+//		----------using strem 
+		System.out.println("------------------using stream find duplicate------------------");
+		usingStreamFindDuplicate(array);
+
+//		------------- using stream grouping by
+
+		System.out.println("------------------using stream grouping by duplicate------------------");
+		usingGroupingByFindDuplicate(array);
+
+		
+		System.out.println("------------------using frequency by duplicate------------------");
+		countingFrequency(array);
+		
+	}
+
+	private static void countingFrequency(List<String> array) {
+		array.stream()
+		.filter(e -> Collections.frequency(array, e) > 1)
+		.collect(Collectors.toSet())
+		.forEach(e -> System.out.println(e));
+	}
+
+	private static void usingGroupingByFindDuplicate(List<String> array) {
+		array.stream()
+		.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+		.entrySet()
+		.stream()
+		.filter(e -> e.getValue() > 1)
+		.forEach(e -> System.out.println(e.getKey()));
+	}
+
+	private static void usingStreamFindDuplicate(List<String> array) {
+		HashSet<String> data = new HashSet<>();
+		array.stream()
+		.filter(element -> !data.add(element))
+		.forEach(e -> System.out.println(e));
+	}
+
+	private static void usingHashSetFindDuplicate(List<String> array) {
+		HashSet<String> data = new HashSet<>();
+
+		array.forEach(e -> {
+			if (!data.add(e)) {
+				System.out.println(e + "  duplicate");
+			}
+		});
+	}
+
+	private static void usingHashMapFindDuplicate(HashMap<String, Integer> map, List<String> array) {
+		array.forEach(e -> {
+			if (map.containsKey(e)) {
+				int count = map.get(e);
+				map.put(e, count + 1);
+			} else {
+				map.put(e, 1);
+			}
+		});
+
+		for (Entry<String, Integer> entry : map.entrySet()) {
+			if (entry.getValue() > 1) {
+				System.out.println(entry.getKey() + " duplicate");
+			}
+		}
+	}
+
+}
